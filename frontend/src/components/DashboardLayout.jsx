@@ -1,5 +1,6 @@
 //This is the main layout component with sidebar and main content are for admin dashboard upload and stats
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Menu,
   ChevronLeft,
@@ -11,6 +12,7 @@ import {
   Download,
   Settings,
   CheckCircle2,
+  LogOut,
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 
@@ -18,6 +20,8 @@ const API_BASE = "http://127.0.0.1:8000";
 
 export default function DashboardLayout() {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const navigate = useNavigate();
 
   const sidebarItems = [
     { name: "Analytics", icon: BarChart3 },
@@ -111,6 +115,29 @@ export default function DashboardLayout() {
     }
   };
 
+  // Logout function
+  const handleLogout = () => {
+    // Clear localStorage
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userRegNo");
+
+    // Navigate to landing page
+    navigate("/");
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".profile-dropdown")) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <div className="relative  bg-gray-100">
       {/* Backdrop overlay when sidebar is expanded */}
@@ -157,9 +184,20 @@ export default function DashboardLayout() {
         <nav className="mt-4 flex flex-col gap-2 flex-1">
           {sidebarItems.map((item) => {
             const IconComponent = item.icon;
+            const handleItemClick = () => {
+              if (item.name === "Real chat") {
+                navigate("/chat");
+              } else if (item.name === "Analytics") {
+                navigate("/analytics");
+              } else if (item.name === "Policies") {
+                navigate("/policies");
+              }
+            };
+
             return (
               <div
                 key={item.name}
+                onClick={handleItemClick}
                 className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-md cursor-pointer mx-2"
               >
                 <IconComponent size={22} className="text-white shrink-0" />
@@ -175,9 +213,12 @@ export default function DashboardLayout() {
           })}
         </nav>
 
-        {/* User Profile Section */}
-        <div className="p-4">
-          <div className="flex items-center gap-3 px-2 py-2 text-gray-300 rounded-md cursor-pointer">
+        {/* User Profile Section with Dropdown */}
+        <div className="p-4 relative profile-dropdown">
+          <div
+            onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+            className="flex items-center gap-3 px-2 py-2 text-gray-300 hover:bg-gray-800 rounded-md cursor-pointer transition-colors"
+          >
             <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center shrink-0">
               <User size={18} className="text-white shrink-0" />
             </div>
@@ -186,16 +227,25 @@ export default function DashboardLayout() {
                 isExpanded ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
               }`}
             >
-              <div className="text-sm font-medium text-white">User Profile</div>
+              <div className="text-sm font-medium text-white">
+                {localStorage.getItem("userRegNo") || "Admin"}
+              </div>
               <div className="text-xs text-gray-400">Admin</div>
             </div>
-            <Settings
-              size={18}
-              className={`ml-auto text-gray-400 shrink-0 transition-all duration-300 ${
-                isExpanded ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
-              }`}
-            />
           </div>
+
+          {/* Dropdown Menu */}
+          {showProfileDropdown && isExpanded && (
+            <div className="absolute bottom-full left-4 right-4 mb-2 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+              <button
+                onClick={handleLogout}
+                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
+              >
+                <LogOut size={16} />
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
