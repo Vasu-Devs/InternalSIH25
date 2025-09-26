@@ -1,8 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./components/DashboardLayout";
 import { LandingPage } from "./components/LandingPage";
-import Signup from "./components/Signup";
-import Analytics from "./components/Analytics";
 
 export const App = () => {
   return (
