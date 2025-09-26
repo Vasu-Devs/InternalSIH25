@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DashboardLayout from "./components/DashboardLayout";
 import { LandingPage } from "./components/LandingPage";
-
+import ChatInterface from "./components/ChatInterface";
+import Analytics from "./components/Analytics";
 export const App = () => {
   return (
     <Router>
@@ -9,8 +10,14 @@ export const App = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/dashboard" element={<DashboardLayout />} />
+          <Route path="/chat" element={<ChatInterface />} />
         </Routes>
       </div>
     </Router>
+
+
+    // <div className="min-h-screen bg-white text-black">
+    //   <Analytics />
+    // </div>
   );
 };

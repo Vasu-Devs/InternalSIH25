@@ -1,44 +1,24 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
-const AdminWhitePanel = () => {
-  const [registrationNumber, setRegistrationNumber] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const res = await fetch("http://localhost:4000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ regNo: registrationNumber, password }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Login failed");
-
-      // save token locally
-      localStorage.setItem("token", data.token);
-
-      // redirect if admin
-      if (data.role === "admin") {
-        navigate("/dashboard");
-      } else {
-        alert("You are not an admin!");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Invalid credentials");
-    }
-  };
-
+const AdminWhitePanel = ({
+  registrationNumber,
+  setRegistrationNumber,
+  password,
+  setPassword,
+  showPassword,
+  handleSubmit,
+  isLoading = false,
+  error = "",
+}) => {
   return (
     <div className="absolute inset-0 p-8 flex flex-col justify-center">
       <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign in</h2>
       <p className="text-gray-600 mb-6 text-sm">Enter your UID to sign in.</p>
+      {error && (
+        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">
+          {error}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* UID input */}
         <div>
@@ -73,9 +53,14 @@ const AdminWhitePanel = () => {
         {/* Submit button */}
         <button
           type="submit"
-          className="w-full bg-gray-900 text-white py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-sm cursor-pointer"
+          disabled={isLoading}
+          className={`w-full py-2.5 rounded-lg font-semibold transition-colors text-sm ${
+            isLoading
+              ? "bg-gray-400 text-white cursor-not-allowed"
+              : "bg-gray-900 text-white hover:bg-gray-800 cursor-pointer"
+          }`}
         >
-          Sign in
+          {isLoading ? "Signing in..." : "Sign in"}
         </button>
       </form>
     </div>

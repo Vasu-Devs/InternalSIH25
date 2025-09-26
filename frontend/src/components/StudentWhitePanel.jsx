@@ -5,6 +5,8 @@ const StudentWhitePanel = ({
   setPassword,
   showPassword,
   handleSubmit,
+  isLoading = false,
+  error = "",
 }) => {
   return (
     <div className="absolute inset-0 p-8 flex flex-col justify-center">
@@ -12,6 +14,11 @@ const StudentWhitePanel = ({
       <p className="text-gray-600 mb-6 text-sm">
         Enter your registration number to sign in.
       </p>
+      {error && (
+        <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">
+          {error}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-gray-900 font-medium mb-1 text-sm">
@@ -41,9 +48,14 @@ const StudentWhitePanel = ({
         </div>
         <button
           type="submit"
-          className="w-full bg-gray-900 text-white py-2.5 rounded-lg font-semibold hover:bg-gray-800 transition-colors text-sm cursor-pointer"
+          disabled={isLoading}
+          className={`w-full py-2.5 rounded-lg font-semibold transition-colors text-sm ${
+            isLoading
+              ? "bg-gray-400 text-white cursor-not-allowed"
+              : "bg-gray-900 text-white hover:bg-gray-800 cursor-pointer"
+          }`}
         >
-          Sign in
+          {isLoading ? "Signing in..." : "Sign in"}
         </button>
       </form>
     </div>

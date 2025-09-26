@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import StudentBlackPanel from "./StudentBlackPanel";
 import AdminBlackPanel from "./AdminBlackPanel";
 import StudentWhitePanel from "./StudentWhitePanel";
@@ -9,15 +10,57 @@ const Signup = ({ isOpen, onClose }) => {
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   // states
   const [isStudent, setIsStudent] = useState(true);
   const [isBlackLeft, setIsBlackLeft] = useState(true); // toggle on each switch
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Registration Number:", registrationNumber);
-    console.log("Password:", password);
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:4000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          regNo: registrationNumber,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store token in localStorage
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("userRole", data.role);
+        localStorage.setItem("userRegNo", data.regNo);
+
+        // Route based on role
+        if (data.role === "admin") {
+          navigate("/dashboard");
+        } else if (data.role === "user") {
+          navigate("/chat");
+        }
+
+        // Close modal
+        onClose();
+      } else {
+        setError(data.error || "Login failed");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("Network error. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSwitch = () => {
@@ -79,6 +122,8 @@ const Signup = ({ isOpen, onClose }) => {
                 setPassword={setPassword}
                 showPassword={showPassword}
                 handleSubmit={handleSubmit}
+                isLoading={isLoading}
+                error={error}
               />
             </div>
           </motion.div>

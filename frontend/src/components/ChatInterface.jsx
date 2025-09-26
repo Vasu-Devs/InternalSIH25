@@ -1,10 +1,10 @@
 // src/components/ChatInterface.jsx
 import React, { useState, useRef } from 'react';
 import { Bell, FileText, Settings, Info } from 'lucide-react';
-import sendIcon from 'E:/INNERSIH/frontend/icons/send.svg';
-import voiceIcon from 'E:/INNERSIH/frontend/icons/voice_mode.svg';
-import dexterIcon from 'E:/INNERSIH/frontend/icons/dexter.svg';
-import micIcon from 'E:/INNERSIH/frontend/icons/microphone.svg';
+import sendIcon from "../../icons//send.svg";
+import voiceIcon from '../../icons/voice_mode.svg';
+import dexterIcon from '../../icons/dexter.svg';
+import micIcon from '../../icons/microphone.svg';
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
